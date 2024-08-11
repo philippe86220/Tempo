@@ -1,0 +1,43 @@
+{
+    "name": "Tempo",
+    "version": "1.0.0",
+    "description": "Utilisation simplifié des Temporisations",
+    "keywords": "delay, timer, micro, time",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/boby15000/Tempo.git"
+    },
+    "authors":
+    [
+      {
+        "name": "Nicolas Fourgheon",
+        "email": "boby15000@hotmail.com",
+        "maintainer": true
+      }
+    ],
+    "examples": [
+    {
+        "name": "exemple_simple",
+        "base": "exemples/",
+        "files": ["exemple_simple.cpp"]
+    },
+    {
+        "name": "exemple_advance",
+        "base": "exemples/",
+        "files": ["exemple_advance.cpp"]
+    }
+    ],
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*",
+    "export": {
+      "exclude": [
+        "src/main.cpp",
+        ".*",
+        "/.*",
+        "platformio.ini",
+        "/test"
+      ]
+    }
+  }
