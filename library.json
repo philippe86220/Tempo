@@ -1,8 +1,8 @@
 {
     "name": "Tempo",
-    "version": "1.0.0",
-    "description": "Utilisation simplifié des Temporisations",
-    "keywords": "delay, timer, micro, time",
+    "version": "1.1.0",
+    "description": "Utilisation simple des Temporisations",
+    "keywords": "delay, timer, micro, time, minuterie, tempo, temporisation, antidelay",
     "repository":
     {
       "type": "git",
@@ -18,14 +18,14 @@
     ],
     "examples": [
     {
-        "name": "exemple_simple",
+        "name": "oneTimer",
         "base": "exemples/",
-        "files": ["exemple_simple.cpp"]
+        "files": ["oneTimer.cpp"]
     },
     {
-        "name": "exemple_advance",
+        "name": "moreTimer",
         "base": "exemples/",
-        "files": ["exemple_advance.cpp"]
+        "files": ["moreTimer.cpp"]
     }
     ],
     "license": "MIT",
@@ -37,7 +37,8 @@
         ".*",
         "/.*",
         "platformio.ini",
-        "/test"
+        "/lib/",
+        "/test/"
       ]
     }
   }
