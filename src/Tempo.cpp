@@ -19,7 +19,7 @@ Tempo::Tempo(){
 */
 void Tempo::Init(long value, int unite){
     this->_tempo[0] = 0 ; // Etat du compteur
-    this->_tempo[1] = ConversionUnite(unite, value); // Seuil du compteur
+    this->_tempo[1] = this->ConversionUnite(unite, value); // Seuil du compteur
     this->_tempo[2] = unite; // Unite du compteur
 }
 
@@ -62,12 +62,18 @@ int Tempo::End(){
         if ( this->_tempo[2] == this->Micro )
         { 
             this->_tempo[4] = ( (micros() - this->_tempo[3]) >= this->_tempo[1] ); // Etat fin de compteur
-            this->_tempo[5] = ( this->_tempo[1]-(micros() - this->_tempo[3]) ); // Temps restant
+            if (this->_tempo[4] || this->_tempo[1] < (micros() - this->_tempo[3])   )
+            { this->_tempo[5] = 0;  } // Temps restant
+            else
+            { this->_tempo[5] = ( this->_tempo[1]-(micros() - this->_tempo[3]) );  } // Temps restant
         }
         else
         {
             this->_tempo[4] = ( (millis() - this->_tempo[3]) >= this->_tempo[1] ); // Etat fin de compteur
-            this->_tempo[5] = ( this->_tempo[1]-(millis() - this->_tempo[3]) ); // Temps restant
+            if (this->_tempo[4] || this->_tempo[1] < (millis() - this->_tempo[3])   )
+            { this->_tempo[5] = 0;  } // Temps restant
+            else
+            { this->_tempo[5] = ( this->_tempo[1]-(millis() - this->_tempo[3]) );  } // Temps restant
         }
 
         // Stop la Tempo si fin de celle-ci.
