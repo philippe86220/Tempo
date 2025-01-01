@@ -7,9 +7,7 @@ Tempo Minuterie2;
 
 void setup() {
   Serial.begin(9600);
-  Minuterie.Start(1, Minuterie.Minute);
-  Minuterie1.Start(10, Minuterie.Seconde);
-  Minuterie2.Init(2000, Minuterie.Micro);
+  Minuterie.Init(5, Minuterie.Seconde);
 }
 
 String message;
@@ -18,23 +16,7 @@ String message2;
 
 void loop() {
 
-  if ( Minuterie.End() )
-  { message = "Compteur 1mn terminé"; }
-  else
-  { message = "Compteur 1mn en cours, Reste encore : " + String(Minuterie.GetTime()/1000); }
-
-  if ( Minuterie1.End() )
-  { message1 = "Compteur 10s terminé"; Minuterie2.Start();  }
-  else
-  { message1 = "Compteur 10s en cours, Reste encore : " + String(Minuterie1.GetTime()/1000); }
-
-  if ( Minuterie2.End() )
-  { message2 = "Compteur 2000 micro terminé"; }
-  else
-  { message2 = "Compteur 2000 micro en cours, Reste encore : " + String(Minuterie2.GetTime()); }
-
-  Serial.println(message);
-  Serial.println(message1);
-  Serial.println(message2);
-  delay(1000);
+  // Démarre le compteur si celui-ci n'est pas déjà en fonction
+  Minuterie.Start();
+  Serial.println(Minuterie.GetTime());
 }

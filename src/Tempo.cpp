@@ -1,7 +1,18 @@
+/**
+ * @file Tempo.cpp
+ * @author Nicolas Fourgheon
+ * @page https://github.com/boby15000/Tempo
+ * @brief Tempo est une bibliothèque qui vise à fournir une fonctionnalité de délai non bloquante.
+ * @version v1.3.0
+ * @date 2023-05-24
+ *
+ * @copyright Copyright (c) 2024
+ */
+
 #ifndef Tempo_h
 #include "Tempo.h"
-#endif
 
+#include <Arduino.h>
 
 /**
  * Declare la Tempo.
@@ -28,10 +39,9 @@ void Tempo::Init(long value, int unite){
 */
 void Tempo::Start(long value, int unite){
     if ( this->_tempo[0] ) return;
-    if ( value > 0 && unite > 0 ) this->Init(value, unite);
+    if ( value > 0 && unite > 0 ) this->Init(value, unite); // Réinitialise le compteur avec des nouvelles données
     this->_tempo[0] = 1 ; // Etat du compteur
-    if ( unite == this->Millis ) this->_tempo[3] = millis(); ; // Temps initiale du compteur au démarrage
-    if ( unite == this->Micro ) this->_tempo[3] = micros(); ; // Temps initiale du compteur au démarrage
+    this->_tempo[3] = ( this->_tempo[2] < this->Millis ) ? micros() : millis(); // Défini le Temps initiale du compteur au démarrage
     this->_tempo[4] = 0 ; // Etat fin de compteur
 }
 
@@ -62,7 +72,7 @@ int Tempo::End(){
         if ( this->_tempo[2] == this->Micro )
         { 
             this->_tempo[4] = ( (micros() - this->_tempo[3]) >= this->_tempo[1] ); // Etat fin de compteur
-            if (this->_tempo[4] || this->_tempo[1] < (micros() - this->_tempo[3])   )
+            if (  this->_tempo[1] < (micros() - this->_tempo[3])   )
             { this->_tempo[5] = 0;  } // Temps restant
             else
             { this->_tempo[5] = ( this->_tempo[1]-(micros() - this->_tempo[3]) );  } // Temps restant
@@ -70,8 +80,8 @@ int Tempo::End(){
         else
         {
             this->_tempo[4] = ( (millis() - this->_tempo[3]) >= this->_tempo[1] ); // Etat fin de compteur
-            if (this->_tempo[4] || this->_tempo[1] < (millis() - this->_tempo[3])   )
-            { this->_tempo[5] = 0;  } // Temps restant
+            if ( this->_tempo[1] < (millis() - this->_tempo[3])   )
+            { this->_tempo[5] = this->_tempo[3];  } // Temps restant
             else
             { this->_tempo[5] = ( this->_tempo[1]-(millis() - this->_tempo[3]) );  } // Temps restant
         }
@@ -111,3 +121,4 @@ long Tempo::ConversionUnite(long unite, long seuil)
         break;
     };
 }
+#endif

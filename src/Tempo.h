@@ -1,3 +1,14 @@
+/**
+ * @file Tempo.h
+ * @author Nicolas Fourgheon
+ * @page https://github.com/boby15000/Tempo
+ * @brief Tempo est une bibliothèque qui vise à fournir une fonctionnalité de délai non bloquante.
+ * @version v1.3.0
+ * @date 2023-05-24
+ *
+ * @copyright Copyright (c) 2024
+ */
+
 #if ARDUINO >= 100    
  #include "Arduino.h"
 #else
@@ -27,13 +38,13 @@ class Tempo
     private:
         long ConversionUnite(long unite, long seuil);
         unsigned long _tempo[6];
-        /*
+        /* ---------------------------
         Tempo[0] => Etat du compteur
         Tempo[1] => Seuil du compteur
         Tempo[2] => Unite du compteur
         Tempo[3] => Temps initiale du compteur au démarrage
         Tempo[4] => Etat fin de compteur
         Tempo[5] => Temps restant
-        */
+        --------------------------- */
 };
 #endif
