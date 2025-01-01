@@ -4,9 +4,9 @@
 Tempo Minuterie;
 
 void setup() {
-  
+  // Initiale une communication série
   Serial.begin(9600);
-  //Minuterie.Init(5, Minuterie.Seconde);
+  // Démarre le minuteur avec ses paramétres
   Minuterie.Start(5, Minuterie.Seconde);
 }
 

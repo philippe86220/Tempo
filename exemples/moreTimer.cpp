@@ -6,9 +6,12 @@ Tempo Minuterie1;
 Tempo Minuterie2;
 
 void setup() {
+  // Initiale une communication série
   Serial.begin(9600);
+  // Démarre deux minuteurs avec leurs paramétres
   Minuterie.Start(1, Minuterie.Minute);
   Minuterie1.Start(10, Minuterie.Seconde);
+  // Initialise le minuteur avec ses paramétres (ne démarre le compteur)
   Minuterie2.Init(2000, Minuterie.Micro);
 }
 
