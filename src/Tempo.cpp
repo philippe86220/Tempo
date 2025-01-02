@@ -3,7 +3,7 @@
  * @author Nicolas Fourgheon
  * @page https://github.com/boby15000/Tempo
  * @brief Tempo est une bibliothèque qui vise à fournir une fonctionnalité de délai non bloquante.
- * @version v1.3.0
+ * @version v1.3.5
  * @date 2023-05-24
  *
  * @copyright Copyright (c) 2024
@@ -40,6 +40,15 @@ void Tempo::Init(long value, int unite){
 void Tempo::Start(long value, int unite){
     if ( this->_tempo[0] ) return;
     if ( value > 0 && unite > 0 ) this->Init(value, unite); // Réinitialise le compteur avec des nouvelles données
+    this->_tempo[0] = 1 ; // Etat du compteur
+    this->_tempo[3] = ( this->_tempo[2] < this->Millis ) ? micros() : millis(); // Défini le Temps initiale du compteur au démarrage
+    this->_tempo[4] = 0 ; // Etat fin de compteur
+}
+
+/*
+* Force le Redémarrage de la Tempo.
+*/
+void Tempo::ReStart(){
     this->_tempo[0] = 1 ; // Etat du compteur
     this->_tempo[3] = ( this->_tempo[2] < this->Millis ) ? micros() : millis(); // Défini le Temps initiale du compteur au démarrage
     this->_tempo[4] = 0 ; // Etat fin de compteur
@@ -99,7 +108,6 @@ unsigned long Tempo::GetTime(){
     this->End();
     return this->_tempo[5];
 }
-
 
 /*
 * Converti le seuil en milliseconde pour les unités de Seconde à Heure
