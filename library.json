@@ -1,6 +1,6 @@
 {
     "name": "Tempo",
-    "version": "1.3.0",
+    "version": "1.3.5",
     "description": "Utilisation simple des Temporisations",
     "keywords": "delay, timer, micro, time, minuterie, tempo, temporisation, antidelay",
     "repository":
@@ -17,25 +17,32 @@
       }
     ],
     "examples": [
-    {
+      {
         "name": "oneTimer",
         "base": "exemples/",
         "files": ["oneTimer.cpp"]
-    },
-    {
+      },
+      {
         "name": "moreTimer",
         "base": "exemples/",
         "files": ["moreTimer.cpp"]
-    }
+      },
+      {
+        "name": "anyTimer",
+        "base": "exemples/",
+        "files": ["anyTimer.cpp"]
+      }
     ],
     "license": "MIT",
     "frameworks": "*",
     "platforms": "*",
     "export": {
-      "include": [
-          "/src/Tempo.cpp",
-          "/src/Tempo.h",
-          "/exemples/*"
+      "exclude": [
+        "lib/",
+        "src/main.cpp",
+        "test/",
+        ".gitignore",
+        "platformio.ini"
       ]
     }
   }
