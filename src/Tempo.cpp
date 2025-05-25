@@ -73,8 +73,8 @@ bool Tempo::IsStart(){
 * Indique la fin de la tempo.
 */
 int Tempo::End(){
-     // la Tempo est actif
-    if ( this->_tempo[0] )
+    // la Tempo est actif et la tempo n'est pas terminé
+    if ( this->_tempo[0] && !this->_tempo[4] )
     {
         // Détermine la fin de la tempo.
         // (Temps Actuel - Temps de départ) >= Seuil
@@ -94,9 +94,6 @@ int Tempo::End(){
             else
             { this->_tempo[5] = ( this->_tempo[1]-(millis() - this->_tempo[3]) );  } // Temps restant
         }
-
-        // Stop la Tempo si fin de celle-ci.
-        if ( this->_tempo[4] ) this->Stop();
     }
     return this->_tempo[4];
 }
