@@ -29,7 +29,7 @@ class Tempo
 
         Tempo(); // Declare la Tempo
         void Init(long value, int unite); // Initialise la Tempo
-        void Start(long value = 0, int unite = 0); // Démarre la Tempo si il n'est pas en fonction
+        void Start(long value = 0, int unite = 0); // Démarre la Tempo (si celle-ci n'est terminé ou pas actif)
         void ReStart(); // Force le redémarrage de la Tempo
         void Stop(); // Arrete la Tempo.
         bool IsStart(); // Indique si la Tempo est en fonction.

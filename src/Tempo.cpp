@@ -35,10 +35,10 @@ void Tempo::Init(long value, int unite){
 }
 
 /*
-* Démarre la Tempo si il n'est pas en fonction.
+* Démarre la Tempo (si celle-ci n'est terminé ou pas actif).
 */
 void Tempo::Start(long value, int unite){
-    if ( this->_tempo[0] ) return;
+    if ( this->_tempo[0] && this->_tempo[4] ) return;
     if ( value > 0 && unite > 0 ) this->Init(value, unite); // Réinitialise le compteur avec des nouvelles données
     this->_tempo[0] = 1 ; // Etat du compteur
     this->_tempo[3] = ( this->_tempo[2] < this->Millis ) ? micros() : millis(); // Défini le Temps initiale du compteur au démarrage
