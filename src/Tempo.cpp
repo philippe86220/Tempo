@@ -23,6 +23,8 @@ Tempo::Tempo(){
     this->_tempo[2] = 0 ; // Unite du compteur
     this->_tempo[3] = 0 ; // Temps initiale du compteur au démarrage
     this->_tempo[4] = 0 ; // Etat fin de compteur
+    this->_tempo[5] = 0 ; // Temps restant
+    this->_tempo[6] = 0 ; // Seuil du compteur (utilisé lors d'une pause)
 }
 
 /*
@@ -35,10 +37,10 @@ void Tempo::Init(long value, int unite){
 }
 
 /*
-* Démarre la Tempo (si celle-ci n'est terminé ou pas actif).
+* Démarre la Tempo (si celle-ci est terminé ou pas actif).
 */
 void Tempo::Start(long value, int unite){
-    if ( this->_tempo[0] && this->_tempo[4] ) return;
+    if ( this->_tempo[0] && !this->_tempo[4] ) return;    
     if ( value > 0 && unite > 0 ) this->Init(value, unite); // Réinitialise le compteur avec des nouvelles données
     this->_tempo[0] = 1 ; // Etat du compteur
     this->_tempo[3] = ( this->_tempo[2] < this->Millis ) ? micros() : millis(); // Défini le Temps initiale du compteur au démarrage
@@ -55,11 +57,21 @@ void Tempo::ReStart(){
 }
 
 /*
+* Mise en Pause de la Tempo.
+*/
+void Tempo::Pause(){
+    if ( !this->_tempo[0] ||  this->_tempo[4] ) return;
+    this->_tempo[6] = this->_tempo[1];
+    this->Init( (this->_tempo[1] - (millis() - this->_tempo[3])), this->_tempo[2]); // Réinitialise le compteur avec des nouvelles données
+}
+
+/*
 * Arrete la Tempo.
 */
 void Tempo::Stop(){
     this->_tempo[0] = 0 ; // Etat du compteur
     this->_tempo[3] = 0 ; // Temps initiale du compteur au démarrage
+    this->_tempo[6] = 0 ; // Seuil du compteur (utilisé lors d'une pause)
 }
 
 /*
@@ -70,9 +82,16 @@ bool Tempo::IsStart(){
 }
 
 /*
+* Indique si la Tempo est en pause.
+*/
+bool Tempo::IsPause(){
+    return this->_tempo[6] > 0 && !this->_tempo[0];
+}
+
+/*
 * Indique la fin de la tempo.
 */
-int Tempo::End(){
+int Tempo::IsEnd(){
     // la Tempo est actif et la tempo n'est pas terminé
     if ( this->_tempo[0] && !this->_tempo[4] )
     {
@@ -94,6 +113,13 @@ int Tempo::End(){
             else
             { this->_tempo[5] = ( this->_tempo[1]-(millis() - this->_tempo[3]) );  } // Temps restant
         }
+
+        // Réinitialise le seuil capteur "Pause" si la tempo est terminé     
+        if ( this->_tempo[6] > 0 && this->_tempo[4] )
+        {
+            this->_tempo[1] = this->_tempo[6];
+            this->_tempo[6] = 0;
+        }
     }
     return this->_tempo[4];
 }
@@ -102,7 +128,7 @@ int Tempo::End(){
 * Retourne le temps restant en Millis ou Micro si Micro utilisé en tant qu'unité
 */
 unsigned long Tempo::GetTime(){
-    this->End();
+    this->IsEnd();
     return this->_tempo[5];
 }
 
