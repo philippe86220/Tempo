@@ -14,7 +14,7 @@ String message;
 
 void loop() {
 
-  if ( Minuterie.End() )
+  if ( Minuterie.IsEnd() )
   { message = "Compteur 5s terminé"; }
   else
   { message = "Compteur 5s en cours, Reste encore : " + String(Minuterie.GetTime()/1000); }

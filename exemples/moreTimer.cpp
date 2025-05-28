@@ -21,17 +21,17 @@ String message2;
 
 void loop() {
 
-  if ( Minuterie.End() )
+  if ( Minuterie.IsEnd() )
   { message = "Compteur 1mn terminé"; }
   else
   { message = "Compteur 1mn en cours, Reste encore : " + String(Minuterie.GetTime()/1000); }
 
-  if ( Minuterie1.End() )
+  if ( Minuterie1.IsEnd() )
   { message1 = "Compteur 10s terminé"; Minuterie2.Start();  }
   else
   { message1 = "Compteur 10s en cours, Reste encore : " + String(Minuterie1.GetTime()/1000); }
 
-  if ( Minuterie2.End() )
+  if ( Minuterie2.IsEnd() )
   { message2 = "Compteur 2000 micro terminé"; }
   else
   { message2 = "Compteur 2000 micro en cours, Reste encore : " + String(Minuterie2.GetTime()); }

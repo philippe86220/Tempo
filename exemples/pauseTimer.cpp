@@ -3,10 +3,10 @@
 
 Tempo Minuterie;
 Tempo Minuterie1;
-Tempo Minuterie2;
 
 void setup() {
   Serial.begin(9600);
+  // Démarre le minuteur avec ses paramétres
   Minuterie.Start(30, Minuterie.Seconde);
 }
 

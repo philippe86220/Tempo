@@ -5,11 +5,11 @@ Tempo Minuterie;
 
 void setup() {
   Serial.begin(9600);
+  // Initialise le minuteur avec ses paramétres (ne démarre le compteur)
   Minuterie.Init(5, Minuterie.Seconde);
 }
 
 void loop() {
-
   // Démarre le compteur si celui-ci n'est pas déjà en fonction
   Minuterie.Start();
   Serial.println(Minuterie.GetTime());
