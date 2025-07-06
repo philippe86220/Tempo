@@ -3,7 +3,7 @@
  * @author Nicolas Fourgheon
  * @page https://github.com/boby15000/Tempo
  * @brief Tempo est une bibliothèque qui vise à fournir une fonctionnalité de délai non bloquante.
- * @version v1.3.5
+ * @version v1.4.1
  * @date 2023-05-24
  *
  * @copyright Copyright (c) 2024
@@ -40,6 +40,17 @@ class Tempo
 
     private:
         long ConversionUnite(long unite, long seuil);
+        struct TempoData {
+            bool actif;
+            unsigned long seuil;
+            int unite;
+            unsigned long depart;
+            bool fini;
+            unsigned long restant;
+            unsigned long pauseSeuil;
+        };
+        TempoData data;
+        
         unsigned long _tempo[7];
         /* ---------------------------
         Tempo[0] => Etat du compteur

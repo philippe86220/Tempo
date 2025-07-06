@@ -3,7 +3,7 @@
  * @author Nicolas Fourgheon
  * @page https://github.com/boby15000/Tempo
  * @brief Tempo est une bibliothèque qui vise à fournir une fonctionnalité de délai non bloquante.
- * @version v1.4.0
+ * @version v1.4.1
  * @date 2023-05-24
  *
  * @copyright Copyright (c) 2024
@@ -27,6 +27,8 @@ Tempo::Tempo(){
     this->_tempo[6] = 0 ; // Seuil du compteur (utilisé lors d'une pause)
 }
 
+
+
 /*
 * Initiale la Tempo.
 */
@@ -34,6 +36,8 @@ void Tempo::Init(long value, int unite){
     this->_tempo[0] = 0 ; // Etat du compteur
     this->_tempo[1] = this->ConversionUnite(unite, value); // Seuil du compteur
     this->_tempo[2] = unite; // Unite du compteur
+    data.actif = 2;
+
 }
 
 /*
