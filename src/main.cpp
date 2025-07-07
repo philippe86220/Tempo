@@ -14,7 +14,7 @@ void setup() {
 
 void loop() {
 
-  Minuterie.IsEnd();
+  Minuterie.Update();
   Serial.println("En cours");
   
   delay(1000);

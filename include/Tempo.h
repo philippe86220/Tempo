@@ -3,7 +3,7 @@
  * @author Nicolas Fourgheon
  * @page https://github.com/boby15000/Tempo
  * @brief Tempo est une bibliothèque qui vise à fournir une fonctionnalité de délai non bloquante.
- * @version v1.5.1
+ * @version v1.5.2
  * @date 2023-05-24
  *
  * @copyright Copyright (c) 2024
@@ -38,6 +38,7 @@ class Tempo
         void Pause(); // Mise en pause de la Tempo.
         void Stop(); // Arrete la Tempo.
         void OnEnd(Callback cb); // Ajoute une fonction de CallBack
+        void Update(); // Logique de Mise à jour de la Tempo - Doit être dans le loop() si IsEnd() non utilisé
         bool IsStart(); // Indique si la Tempo est en fonction.
         bool IsPause(); // Indique si la Tempo est en pause.
         int IsEnd(); // Indique la fin de la tempo.

@@ -3,7 +3,7 @@
  * @author Nicolas Fourgheon
  * @page https://github.com/boby15000/Tempo
  * @brief Tempo est une bibliothèque qui vise à fournir une fonctionnalité de délai non bloquante.
- * @version v1.5.1
+ * @version v1.5.2
  * @date 2023-05-24
  *
  * @copyright Copyright (c) 2024
@@ -77,6 +77,13 @@ void Tempo::Stop(){
 */
 void Tempo::OnEnd(Callback cb) {
     onEndCallback = cb;
+}
+
+/*
+* Logique de Mise à jour de la Tempo - Doit être dans le loop() si IsEnd() non utilisé
+*/
+void Tempo::Update() {
+  this->IsEnd(); // pour plus de clarté d'usage
 }
 
 /*
