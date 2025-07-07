@@ -1,6 +1,6 @@
 {
     "name": "Tempo",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "description": "Bibliothèque Arduino pour créer des temporisations non bloquantes avec gestion des unités de temps (micro, millisecondes, secondes, minutes, heures). Possibilité de Pause, Restart et ajout de CallBack",
     "keywords": [
       "timer",
@@ -40,14 +40,14 @@
         "files": ["moreTimer.cpp"]
       },
       {
-        "name": "PauseTimer",
+        "name": "pauseTimer",
         "base": "exemples/",
-        "files": ["PauseTimer.cpp"]
+        "files": ["pauseTimer.cpp"]
       },
       {
-        "name": "CallBackTimer",
+        "name": "callBackTimer",
         "base": "exemples/",
-        "files": ["CallBackTimer.cpp"]
+        "files": ["callBackTimer.cpp"]
       }
     ],
     "license": "MIT",

@@ -3,7 +3,7 @@
  * @author Nicolas Fourgheon
  * @page https://github.com/boby15000/Tempo
  * @brief Tempo est une bibliothèque qui vise à fournir une fonctionnalité de délai non bloquante.
- * @version v1.5.0
+ * @version v1.5.1
  * @date 2023-05-24
  *
  * @copyright Copyright (c) 2024
