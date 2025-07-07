@@ -9,10 +9,10 @@ void setup() {
   // Initiale une communication série
   Serial.begin(9600);
   // Démarre deux minuteurs avec leurs paramétres
-  Minuterie.Start(1, Minuterie.Minute);
-  Minuterie1.Start(10, Minuterie.Seconde);
+  Minuterie.Start(1, Tempo::MINUTE);
+  Minuterie1.Start(10, Tempo::SECONDE);
   // Initialise le minuteur avec ses paramétres (ne démarre le compteur)
-  Minuterie2.Init(2000, Minuterie.Micro);
+  Minuterie2.Init(2000, Tempo::MICRO);
 }
 
 String message;

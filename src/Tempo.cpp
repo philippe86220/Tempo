@@ -3,7 +3,7 @@
  * @author Nicolas Fourgheon
  * @page https://github.com/boby15000/Tempo
  * @brief Tempo est une bibliothèque qui vise à fournir une fonctionnalité de délai non bloquante.
- * @version v1.4.1
+ * @version v1.5.0
  * @date 2023-05-24
  *
  * @copyright Copyright (c) 2024
@@ -18,79 +18,79 @@
  * Declare la Tempo.
  */
 Tempo::Tempo(){
-    this->_tempo[0] = 0 ; // Etat du compteur
-    this->_tempo[1] = 0 ; // Seuil du compteur
-    this->_tempo[2] = 0 ; // Unite du compteur
-    this->_tempo[3] = 0 ; // Temps initiale du compteur au démarrage
-    this->_tempo[4] = 0 ; // Etat fin de compteur
-    this->_tempo[5] = 0 ; // Temps restant
-    this->_tempo[6] = 0 ; // Seuil du compteur (utilisé lors d'une pause)
-}
 
+}
 
 
 /*
 * Initiale la Tempo.
 */
-void Tempo::Init(long value, int unite){
-    this->_tempo[0] = 0 ; // Etat du compteur
-    this->_tempo[1] = this->ConversionUnite(unite, value); // Seuil du compteur
-    this->_tempo[2] = unite; // Unite du compteur
-    data.actif = 2;
-
+void Tempo::Init(long value, BaseTemps unite, bool autoRestart){
+    tempo.actif = 0 ; // Etat du compteur
+    tempo.seuil = this->ConversionUnite(unite, value); // Seuil du compteur
+    tempo.unite = unite; // Unite du compteur
+    tempo.autoRestart = autoRestart;
 }
 
 /*
 * Démarre la Tempo (si celle-ci est terminé ou pas actif).
 */
-void Tempo::Start(long value, int unite){
-    if ( this->_tempo[0] && !this->_tempo[4] ) return;    
-    if ( value > 0 && unite > 0 ) this->Init(value, unite); // Réinitialise le compteur avec des nouvelles données
-    this->_tempo[0] = 1 ; // Etat du compteur
-    this->_tempo[3] = ( this->_tempo[2] < this->Millis ) ? micros() : millis(); // Défini le Temps initiale du compteur au démarrage
-    this->_tempo[4] = 0 ; // Etat fin de compteur
+void Tempo::Start(long value, BaseTemps unite, bool autoRestart){
+    if ( tempo.actif && !tempo.fini ) return;    
+    if ( value > 0 ) this->Init(value, unite); // Réinitialise le compteur avec des nouvelles données
+    tempo.actif = 1 ; // Etat du compteur
+    tempo.depart = ( tempo.unite == MICRO ) ? micros() : millis(); // Défini le Temps initiale du compteur au démarrage
+    tempo.fini = 0 ; // Etat fin de compteur
+    tempo.autoRestart = autoRestart;
 }
 
 /*
 * Force le Redémarrage de la Tempo.
 */
 void Tempo::ReStart(){
-    this->_tempo[0] = 1 ; // Etat du compteur
-    this->_tempo[3] = ( this->_tempo[2] < this->Millis ) ? micros() : millis(); // Défini le Temps initiale du compteur au démarrage
-    this->_tempo[4] = 0 ; // Etat fin de compteur
+    tempo.actif = 1 ; // Etat du compteur
+    tempo.depart = ( tempo.unite == MICRO ) ? micros() : millis(); // Défini le Temps initiale du compteur au démarrage
+    tempo.fini = 0 ; // Etat fin de compteur
 }
 
 /*
 * Mise en Pause de la Tempo.
 */
 void Tempo::Pause(){
-    if ( !this->_tempo[0] ||  this->_tempo[4] ) return;
-    this->_tempo[6] = this->_tempo[1];
-    this->_tempo[0] = 0 ; // Etat du compteur
-    this->_tempo[1] = this->_tempo[1] - (millis() - this->_tempo[3]); // Seuil du compteur
+    if ( !tempo.actif || tempo.fini ) return;
+    tempo.pauseSeuil = tempo.seuil;
+    tempo.actif = 0 ; // Etat du compteur
+    tempo.seuil = tempo.seuil - ((( tempo.unite == MICRO ) ? micros() : millis()) - tempo.depart); // Seuil du compteur
 }
 
 /*
 * Arrete la Tempo.
 */
 void Tempo::Stop(){
-    this->_tempo[0] = 0 ; // Etat du compteur
-    this->_tempo[3] = 0 ; // Temps initiale du compteur au démarrage
-    this->_tempo[6] = 0 ; // Seuil du compteur (utilisé lors d'une pause)
+    tempo.actif = 0 ; // Etat du compteur
+    tempo.depart = 0 ; // Temps initiale du compteur au démarrage
+    tempo.pauseSeuil = 0 ; // Seuil du compteur (utilisé lors d'une pause)
+}
+
+/*
+* Ajoute une fonction de CallBack
+*/
+void Tempo::OnEnd(Callback cb) {
+    onEndCallback = cb;
 }
 
 /*
 * Indique si la Tempo est en fonction.
 */
 bool Tempo::IsStart(){
-    return this->_tempo[0];
+    return tempo.actif;
 }
 
 /*
 * Indique si la Tempo est en pause.
 */
 bool Tempo::IsPause(){
-    return this->_tempo[6] > 0 && !this->_tempo[0];
+    return tempo.pauseSeuil > 0 && !tempo.actif;
 }
 
 /*
@@ -98,35 +98,42 @@ bool Tempo::IsPause(){
 */
 int Tempo::IsEnd(){
     // la Tempo est actif et la tempo n'est pas terminé
-    if ( this->_tempo[0] && !this->_tempo[4] )
+    if ( tempo.actif && !tempo.fini )
     {
-        // Détermine la fin de la tempo.
-        // (Temps Actuel - Temps de départ) >= Seuil
-        if ( this->_tempo[2] == this->Micro )
-        { 
-            this->_tempo[4] = ( (micros() - this->_tempo[3]) >= this->_tempo[1] ); // Etat fin de compteur
-            if (  this->_tempo[1] < (micros() - this->_tempo[3])   )
-            { this->_tempo[5] = 0;  } // Temps restant
-            else
-            { this->_tempo[5] = ( this->_tempo[1]-(micros() - this->_tempo[3]) );  } // Temps restant
-        }
-        else
+        // Détermine la fin de la tempo. => (Temps Actuel - Temps de départ) >= Seuil 
+        switch (tempo.unite)
         {
-            this->_tempo[4] = ( (millis() - this->_tempo[3]) >= this->_tempo[1] ); // Etat fin de compteur
-            if ( this->_tempo[1] < (millis() - this->_tempo[3])   )
-            { this->_tempo[5] = this->_tempo[3];  } // Temps restant
+        case MICRO:
+            tempo.fini = ( (micros() - tempo.depart) >= tempo.seuil ); // Etat fin de compteur
+            if (  tempo.seuil < (micros() - tempo.depart)   )
+            { tempo.restant = 0;  } // Temps restant
             else
-            { this->_tempo[5] = ( this->_tempo[1]-(millis() - this->_tempo[3]) );  } // Temps restant
+            { tempo.restant = ( tempo.seuil-(micros() - tempo.depart) );  } // Temps restant
+            break;
+        default:
+            tempo.fini = ( (millis() - tempo.depart) >= tempo.seuil ); // Etat fin de compteur
+            if ( tempo.seuil < (millis() - tempo.depart)   )
+            { tempo.restant = tempo.depart;  } // Temps restant
+            else
+            { tempo.restant = ( tempo.seuil-(millis() - tempo.depart) );  } // Temps restant
+            break;
         }
 
+        // Appel la fonction de CallBack si elle existe
+        if (tempo.fini && onEndCallback != nullptr) onEndCallback();
+
         // Réinitialise le seuil capteur "Pause" si la tempo est terminé     
-        if ( this->_tempo[6] > 0 && this->_tempo[4] )
+        if ( tempo.pauseSeuil > 0 && tempo.fini )
         {
-            this->_tempo[1] = this->_tempo[6];
-            this->_tempo[6] = 0;
+            tempo.seuil = tempo.pauseSeuil;
+            tempo.pauseSeuil = 0;
         }
+
+        // Redémarre la Tempos automatiquement si défini
+        if (tempo.fini && tempo.autoRestart) this->ReStart();
+        
     }
-    return this->_tempo[4];
+    return tempo.fini;
 }
 
 /*
@@ -134,22 +141,22 @@ int Tempo::IsEnd(){
 */
 unsigned long Tempo::GetTime(){
     this->IsEnd();
-    return this->_tempo[5];
+    return tempo.restant;
 }
 
 /*
 * Converti le seuil en milliseconde pour les unités de Seconde à Heure
 */
-long Tempo::ConversionUnite(long unite, long seuil)
+long Tempo::ConversionUnite(BaseTemps unite, long seuil)
 {
     switch (unite) {
-        case 3: // Seconde
+        case SECONDE: // Seconde
             return (seuil *1000);
             break;
-        case 4: // Minute
+        case MINUTE: // Minute
             return (seuil *60000);
             break;
-        case 5: // Heure
+        case HEURE: // Heure
             return (seuil *3600000);
             break;
         default:

@@ -7,7 +7,7 @@ void setup() {
   // Initiale une communication série
   Serial.begin(9600);
   // Démarre le minuteur avec ses paramétres
-  Minuterie.Start(5, Minuterie.Seconde);
+  Minuterie.Start(5, Tempo::SECONDE);
 }
 
 String message;

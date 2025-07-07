@@ -3,7 +3,7 @@
  * @author Nicolas Fourgheon
  * @page https://github.com/boby15000/Tempo
  * @brief Tempo est une bibliothèque qui vise à fournir une fonctionnalité de délai non bloquante.
- * @version v1.4.1
+ * @version v1.5.0
  * @date 2023-05-24
  *
  * @copyright Copyright (c) 2024
@@ -18,48 +18,45 @@
 #ifndef TEMPO_INCLUDED
 #define TEMPO_INCLUDED
 
+typedef void (*Callback)();
+
 class Tempo
 {
     public:
-        static const int Micro = 1;
-        static const int Millis = 2;
-        static const int Seconde = 3;
-        static const int Minute = 4;
-        static const int Heure = 5;
+        enum BaseTemps {
+            MICRO = 1,
+            MILLIS = 2,
+            SECONDE = 3,
+            MINUTE = 4,
+            HEURE = 5
+        };
 
         Tempo(); // Declare la Tempo
-        void Init(long value, int unite); // Initialise la Tempo
-        void Start(long value = 0, int unite = 0); // Démarre la Tempo (si celle-ci n'est terminé ou pas actif)
+        void Init(long value, BaseTemps unite, bool autoRestart = false); // Initialise la Tempo
+        void Start(long value = 0, BaseTemps unite = MICRO, bool autoRestart = false); // Démarre la Tempo (si celle-ci n'est terminé ou pas actif)
         void ReStart(); // Force le redémarrage de la Tempo
         void Pause(); // Mise en pause de la Tempo.
         void Stop(); // Arrete la Tempo.
+        void OnEnd(Callback cb); // Ajoute une fonction de CallBack
         bool IsStart(); // Indique si la Tempo est en fonction.
         bool IsPause(); // Indique si la Tempo est en pause.
         int IsEnd(); // Indique la fin de la tempo.
         unsigned long GetTime(); // Retourne le temps restant en Millis ou Micro si Micro utilisé en tant qu'unité
 
     private:
-        long ConversionUnite(long unite, long seuil);
+        Callback onEndCallback = nullptr;
+        long ConversionUnite(BaseTemps unite, long seuil);
         struct TempoData {
-            bool actif;
-            unsigned long seuil;
-            int unite;
-            unsigned long depart;
-            bool fini;
-            unsigned long restant;
-            unsigned long pauseSeuil;
+            bool actif; // => Etat du compteur
+            unsigned long seuil; // => Seuil du compteur
+            BaseTemps unite; // => Unite du compteur
+            unsigned long depart; // => Temps initiale du compteur au démarrage
+            bool fini; // => Etat fin de compteur
+            unsigned long restant; // => Temps restant
+            unsigned long pauseSeuil; // => Seuil du compteur (utilisé lors d'une pause)
+            bool autoRestart = false; // => Redémarrage automatique (par défaut désactivé)
         };
-        TempoData data;
-        
-        unsigned long _tempo[7];
-        /* ---------------------------
-        Tempo[0] => Etat du compteur
-        Tempo[1] => Seuil du compteur
-        Tempo[2] => Unite du compteur
-        Tempo[3] => Temps initiale du compteur au démarrage
-        Tempo[4] => Etat fin de compteur
-        Tempo[5] => Temps restant
-        Tempo[6] => Seuil du compteur (utilisé lors d'une pause)
-        --------------------------- */
+        TempoData tempo;
+    
 };
 #endif

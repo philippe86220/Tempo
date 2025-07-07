@@ -7,7 +7,7 @@ Tempo Minuterie1;
 void setup() {
   Serial.begin(9600);
   // Démarre le minuteur avec ses paramétres
-  Minuterie.Start(30, Minuterie.Seconde);
+  Minuterie.Start(30, Tempo::SECONDE);
 }
 
 
@@ -20,7 +20,7 @@ void loop() {
   if ( Minuterie.GetTime() < 23000 && !Minuterie1.IsStart() ) 
   {
     Minuterie.Pause();
-    Minuterie1.Start(10, Minuterie1.Seconde);
+    Minuterie1.Start(10, Tempo::SECONDE);
   }
 
   if ( Minuterie1.IsEnd() ) Minuterie.Start();
