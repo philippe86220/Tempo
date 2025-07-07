@@ -40,14 +40,14 @@
         "files": ["moreTimer.cpp"]
       },
       {
-        "name": "PauseTimer",
+        "name": "pauseTimer",
         "base": "exemples/",
-        "files": ["PauseTimer.cpp"]
+        "files": ["pauseTimer.cpp"]
       },
       {
-        "name": "CallBackTimer",
+        "name": "callBackTimer",
         "base": "exemples/",
-        "files": ["CallBackTimer.cpp"]
+        "files": ["callBackTimer.cpp"]
       }
     ],
     "license": "MIT",
