@@ -8,14 +8,19 @@
  */
 
 #include "Tempo.h"
-
 #include <Arduino.h>
 
 /**
- * Declare la Tempo.
+ * @brief Constructeur de la classe Tempo.
  */
 Tempo::Tempo() {}
 
+/**
+ * @brief Initialise les paramètres de la tempo sans la démarrer.
+ * @param value Durée souhaitée.
+ * @param unite Unité de temps.
+ * @param autoRestart Si vrai, la tempo redémarre automatiquement après la fin.
+ */
 void Tempo::Init(unsigned long value, BaseTemps unite, bool autoRestart) {
     tempo.actif = 0;
     tempo.seuil = this->ConversionUnite(unite, value);
@@ -23,6 +28,12 @@ void Tempo::Init(unsigned long value, BaseTemps unite, bool autoRestart) {
     tempo.autoRestart = autoRestart;
 }
 
+/**
+ * @brief Démarre ou redémarre la tempo si elle n’est pas active.
+ * @param value Durée (en fonction de l’unité choisie).
+ * @param unite Unité de temps utilisée.
+ * @param autoRestart Si vrai, la tempo redémarre automatiquement après la fin.
+ */
 void Tempo::Start(unsigned long value, BaseTemps unite, bool autoRestart) {
     if (tempo.actif && !tempo.fini) return;
     if (value > 0) this->Init(value, unite);
@@ -32,12 +43,18 @@ void Tempo::Start(unsigned long value, BaseTemps unite, bool autoRestart) {
     tempo.autoRestart = autoRestart;
 }
 
+/**
+ * @brief Redémarre la tempo depuis le début avec les mêmes paramètres.
+ */
 void Tempo::ReStart() {
     tempo.actif = 1;
     tempo.depart = (tempo.unite == MICRO) ? micros() : millis();
     tempo.fini = 0;
 }
 
+/**
+ * @brief Met en pause la tempo et sauvegarde le temps restant.
+ */
 void Tempo::Pause() {
     if (!tempo.actif || tempo.fini) return;
     tempo.pauseSeuil = tempo.seuil;
@@ -45,16 +62,26 @@ void Tempo::Pause() {
     tempo.seuil = tempo.seuil - (((tempo.unite == MICRO) ? micros() : millis()) - tempo.depart);
 }
 
+/**
+ * @brief Arrête totalement la tempo et réinitialise les paramètres internes.
+ */
 void Tempo::Stop() {
     tempo.actif = 0;
     tempo.depart = 0;
     tempo.pauseSeuil = 0;
 }
 
+/**
+ * @brief Définit une fonction callback appelée automatiquement à la fin de la tempo.
+ * @param cb Fonction à appeler en fin de tempo.
+ */
 void Tempo::OnEnd(Callback cb) {
     onEndCallback = cb;
 }
 
+/**
+ * @brief Met à jour l'état de la tempo. Doit être appelée régulièrement dans loop().
+ */
 void Tempo::Update() {
     if (tempo.actif && !tempo.fini) {
         unsigned long current = (tempo.unite == MICRO) ? micros() : millis();
@@ -73,24 +100,46 @@ void Tempo::Update() {
     }
 }
 
+/**
+ * @brief Indique si la tempo est active.
+ * @return true si active, false sinon.
+ */
 bool Tempo::IsStart() {
     return tempo.actif;
 }
 
+/**
+ * @brief Indique si la tempo est en pause.
+ * @return true si en pause, false sinon.
+ */
 bool Tempo::IsPause() {
     return tempo.pauseSeuil > 0 && !tempo.actif;
 }
 
+/**
+ * @brief Vérifie si la tempo est terminée. Met à jour l’état.
+ * @return true si terminée.
+ */
 bool Tempo::IsEnd() {
     this->Update();
     return tempo.fini;
 }
 
+/**
+ * @brief Retourne le temps restant avant la fin de la tempo.
+ * @return Temps restant (millisecondes ou microsecondes selon l’unité).
+ */
 unsigned long Tempo::GetTime() {
     this->Update();
     return tempo.restant;
 }
 
+/**
+ * @brief Convertit la durée selon l’unité en millisecondes ou microsecondes.
+ * @param unite Unité de base.
+ * @param seuil Valeur à convertir.
+ * @return Valeur convertie.
+ */
 unsigned long Tempo::ConversionUnite(BaseTemps unite, unsigned long seuil) {
     switch (unite) {
         case SECONDE: return (seuil * 1000);
@@ -99,4 +148,3 @@ unsigned long Tempo::ConversionUnite(BaseTemps unite, unsigned long seuil) {
         default:     return seuil;
     }
 }
-
