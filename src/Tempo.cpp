@@ -7,7 +7,6 @@
  * @date 2023-05-24
  */
 
-#ifndef Tempo_h
 #include "Tempo.h"
 
 #include <Arduino.h>
@@ -100,4 +99,4 @@ unsigned long Tempo::ConversionUnite(BaseTemps unite, unsigned long seuil) {
         default:     return seuil;
     }
 }
-#endif
+
