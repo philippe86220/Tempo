@@ -3,7 +3,7 @@
  * @author Nicolas Fourgheon
  * @page https://github.com/boby15000/Tempo
  * @brief Tempo est une bibliothèque qui vise à fournir une fonctionnalité de délai non bloquante.
- * @version v1.5.3
+ * @version v1.5.4
  * @date 2023-05-24
  *
  * @copyright Copyright (c) 2024
@@ -80,10 +80,47 @@ void Tempo::OnEnd(Callback cb) {
 }
 
 /*
-* Logique de Mise à jour de la Tempo - Doit être dans le loop() si IsEnd() non utilisé
+* Logique de Mise à jour de la Tempo - Doit être dans le loop()
 */
 void Tempo::Update() {
-  this->IsEnd(); // pour plus de clarté d'usage
+    // la Tempo est actif et n'est pas terminé
+    if ( tempo.actif && !tempo.fini )
+    {
+        // Détermine la fin de la tempo. => (Temps Actuel - Temps de départ) >= Seuil 
+        switch (tempo.unite)
+        {
+        case MICRO:
+            tempo.fini = ( (micros() - tempo.depart) >= tempo.seuil ); // Etat fin de compteur
+            if (tempo.fini) {
+                tempo.restant = 0;
+            } else {
+                tempo.restant = tempo.seuil - (micros() - tempo.depart);
+            }
+            break;
+        default:
+            tempo.fini = ( (millis() - tempo.depart) >= tempo.seuil ); // Etat fin de compteur
+            if (tempo.fini) {
+                tempo.restant = 0;
+            } else {
+                tempo.restant = tempo.seuil - (millis() - tempo.depart);
+            }
+            break;
+        }
+
+        // Appel la fonction de CallBack si elle existe
+        if (tempo.fini && onEndCallback != nullptr) onEndCallback();
+
+        // Réinitialise le seuil capteur "Pause" si la tempo est terminé     
+        if ( tempo.pauseSeuil > 0 && tempo.fini )
+        {
+            tempo.seuil = tempo.pauseSeuil;
+            tempo.pauseSeuil = 0;
+        }
+
+        // Redémarre la Tempos automatiquement si défini
+        if (tempo.fini && tempo.autoRestart) this->ReStart();
+        
+    }
 }
 
 /*
@@ -104,42 +141,7 @@ bool Tempo::IsPause(){
 * Indique la fin de la tempo.
 */
 int Tempo::IsEnd(){
-    // la Tempo est actif et la tempo n'est pas terminé
-    if ( tempo.actif && !tempo.fini )
-    {
-        // Détermine la fin de la tempo. => (Temps Actuel - Temps de départ) >= Seuil 
-        switch (tempo.unite)
-        {
-        case MICRO:
-            tempo.fini = ( (micros() - tempo.depart) >= tempo.seuil ); // Etat fin de compteur
-            if (  tempo.seuil < (micros() - tempo.depart)   )
-            { tempo.restant = 0;  } // Temps restant
-            else
-            { tempo.restant = ( tempo.seuil-(micros() - tempo.depart) );  } // Temps restant
-            break;
-        default:
-            tempo.fini = ( (millis() - tempo.depart) >= tempo.seuil ); // Etat fin de compteur
-            if ( tempo.seuil < (millis() - tempo.depart)   )
-            { tempo.restant = tempo.depart;  } // Temps restant
-            else
-            { tempo.restant = ( tempo.seuil-(millis() - tempo.depart) );  } // Temps restant
-            break;
-        }
-
-        // Appel la fonction de CallBack si elle existe
-        if (tempo.fini && onEndCallback != nullptr) onEndCallback();
-
-        // Réinitialise le seuil capteur "Pause" si la tempo est terminé     
-        if ( tempo.pauseSeuil > 0 && tempo.fini )
-        {
-            tempo.seuil = tempo.pauseSeuil;
-            tempo.pauseSeuil = 0;
-        }
-
-        // Redémarre la Tempos automatiquement si défini
-        if (tempo.fini && tempo.autoRestart) this->ReStart();
-        
-    }
+    this->IsEnd();
     return tempo.fini;
 }
 
